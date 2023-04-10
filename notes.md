@@ -16,3 +16,10 @@
 
 - następne spotkanie 12.04, między 15-16, stacjonarnie
 
+
+
+https://github.com/0xastro/fmcw-RADAR
+
+http://radar.alizadeh.ca/introduction.html#range-detection
+
+https://github.com/PreSenseRadar/OpenRadar/blob/master/Presense%20Applied%20Radar/basics/Range%20-%20COMPLETED.ipynb

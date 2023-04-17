@@ -23,3 +23,9 @@ https://github.com/0xastro/fmcw-RADAR
 http://radar.alizadeh.ca/introduction.html#range-detection
 
 https://github.com/PreSenseRadar/OpenRadar/blob/master/Presense%20Applied%20Radar/basics/Range%20-%20COMPLETED.ipynb
+
+## 12.03.2023
+- zrobić wykres spektogram(różnica względem poprzedniej próbki)
+- spektogram prędkości obieku
+- spróbować rozpoznawać obiekt żywny - nie
+- maksymalizacja energii do wykrywania obiektów

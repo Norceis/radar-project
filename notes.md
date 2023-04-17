@@ -29,3 +29,6 @@ https://github.com/PreSenseRadar/OpenRadar/blob/master/Presense%20Applied%20Rada
 - spektogram prędkości obieku
 - spróbować rozpoznawać obiekt żywny - nie
 - maksymalizacja energii do wykrywania obiektów
+
+pytania:
+czy fft odległości powinno być liczbą zespoloną czy normalną

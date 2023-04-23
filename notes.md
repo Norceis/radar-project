@@ -1,5 +1,5 @@
 ## 28.03.2023
-- zapisać pliki do hdfs? (h5py)
+- zapisać pliki do h5py
     - można je wczytywać po kawałku
     - albo co x ramek
     - albo od jakiegoś punktu
@@ -18,11 +18,6 @@
 
 
 
-https://github.com/0xastro/fmcw-RADAR
-
-http://radar.alizadeh.ca/introduction.html#range-detection
-
-https://github.com/PreSenseRadar/OpenRadar/blob/master/Presense%20Applied%20Radar/basics/Range%20-%20COMPLETED.ipynb
 
 ## 12.03.2023
 - zrobić wykres spektogram(różnica względem poprzedniej próbki)
@@ -32,3 +27,5 @@ https://github.com/PreSenseRadar/OpenRadar/blob/master/Presense%20Applied%20Rada
 
 pytania:
 czy fft odległości powinno być liczbą zespoloną czy normalną
+
+##18.04.2023

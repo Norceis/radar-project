@@ -1,5 +1,5 @@
 ## 28.03.2023
-- zapisać pliki do hdfs? (h5py)
+- zapisać pliki do h5py
     - można je wczytywać po kawałku
     - albo co x ramek
     - albo od jakiegoś punktu
@@ -16,12 +16,20 @@
 
 - następne spotkanie 12.04, między 15-16, stacjonarnie
 
-## 18.04
+## 12.03.2023
+- zrobić wykres spektogram(różnica względem poprzedniej próbki)
+- spektogram prędkości obieku
+- spróbować rozpoznawać obiekt żywny - nie
+- maksymalizacja energii do wykrywania obiektów
+
+pytania:
+czy fft odległości powinno być liczbą zespoloną czy normalną
+
+##18.04.2023
 
 1 fft po wymiarze chirp
 2 fft po wymiarze bin
-
-2 fft w stosunkowo malym oknie, okno gdzie mozna zalozyc ze predkosc jest stala
+3 fft w stosunkowo malym oknie, okno gdzie mozna zalozyc ze predkosc jest stala
 
 sygnal roznicowy liczyc w czasie, nie w czestotliwosci:
 

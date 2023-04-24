@@ -25,7 +25,7 @@
 pytania:
 czy fft odległości powinno być liczbą zespoloną czy normalną
 
-##18.04.2023
+## 18.04.2023
 
 1 fft po wymiarze chirp
 2 fft po wymiarze bin

@@ -16,9 +16,6 @@
 
 - następne spotkanie 12.04, między 15-16, stacjonarnie
 
-
-
-
 ## 12.03.2023
 - zrobić wykres spektogram(różnica względem poprzedniej próbki)
 - spektogram prędkości obieku
@@ -29,3 +26,19 @@ pytania:
 czy fft odległości powinno być liczbą zespoloną czy normalną
 
 ##18.04.2023
+
+1 fft po wymiarze chirp
+2 fft po wymiarze bin
+3 fft w stosunkowo malym oknie, okno gdzie mozna zalozyc ze predkosc jest stala
+
+sygnal roznicowy liczyc w czasie, nie w czestotliwosci:
+
+diff_resample = signal_resample[1:] - signal_resample[:-1]
+
+sprawdzic rozne spektra roznicowe: co 1/10/100/1000 ms, sprawdzic co widac, jaka roznica czasu lepsza?
+poprawne plotowanie w skali logarytmicznej
+algorytm wykrywania -> sledzenia
+
+wykres odleglosci od czasu, na nim trajektoria
+
+wtorek 16:15

@@ -42,3 +42,23 @@ algorytm wykrywania -> sledzenia
 wykres odleglosci od czasu, na nim trajektoria
 
 wtorek 16:15
+
+## 25.04.2023
+
+1. w otoczeniu punktu nadal jest wysoka wartosc
+2. programowanie dynamiczne, maksymalizacja energii
+3. algorytm progowania OTSU
+4. okna do svm mogą się nachodzić w 50%
+
+
+
+
+
+
+
+
+
+
+
+
+

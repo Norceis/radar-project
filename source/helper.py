@@ -17,7 +17,7 @@ def gen_spectogram(frames: np.ndarray, n: int = 512, t: int = 2924, f_slope: flo
 
     for frame in frames:
         yf = _chunk_to_fft(frame)
-        res.append(np.abs(yf[0:n // 2]))
+        res.append(np.abs(yf[0:n // 2])) # to pozostawia amplitude
     res = np.array(res)
     y = np.fft.fftfreq(n, d=t)[:n // 2]
     y = y / scale
@@ -56,6 +56,73 @@ def print_spectogram(spectogram: np.ndarray, y: np.ndarray,
     plt.show()
 
     return
+
+def gen_velocity_spectogram(frames: np.ndarray, n: int = 512, t: int = 2924, f_slope: float = 5.711) -> (np.ndarray, np.array):
+    """
+    frames: np.array containing all the frames to transform
+    n: number of bins
+    t: sampling frequency
+    f_slope: Frequency slope
+    """
+    scale = 1 / ((29.9792458 / f_slope) / 100)  # 29... is from speed of light
+    t = 1 / t
+    y = np.fft.fftfreq(n, d=t)[:n // 2]
+    y = y / scale
+    y /= 2
+    y = np.round(y,2)
+
+    first_fft = np.fft.fft(frames.imag, axis=1)
+    second_fft = np.fft.fft(first_fft, axis=0)
+    second_fft = np.fft.fftshift(second_fft, axes=0)
+
+    c = 3e8 # Speed of light (m/s)
+
+    start_freq = 77 # Starting frequency of the chirp (GHz)
+    idle_time = 1000 # Time before starting next chirp (us)
+    ramp_end_time = 182.52 # Time after sending each chirp (us)
+
+    velocity_res = c / (2 * start_freq * 1e9 * (idle_time + ramp_end_time) * 1e-6 * frames.shape[1])
+    # print(f'Velocity Resolution: {velocity_res} [meters/second]')
+
+    # Apply the velocity resolution factor to the doppler indicies
+    velocities = np.arange(frames.shape[1]) - (frames.shape[1] // 2)
+    velocities = velocities * velocity_res
+
+    return np.abs(second_fft.T),y, velocities
+
+def print_vel_spectogram(spectogram: np.ndarray, y: np.ndarray, x: np.ndarray = None,
+                      depth_limit: int = None, aspect: float = 100) -> None:
+    """
+    spectogram: spectogram to print
+    y: list of y ticks
+    x: list of x ticks (kinda, need to refactor this)
+    step: step for printing y axis label
+    depth_limit: maximum depth that we want to se in spectogram
+    aspect: aspect ratio of printed spectogram, to make it more visible
+    """
+    if x is None:
+        x = np.arange(0,spectogram.shape[1],1)
+
+    if depth_limit is None:
+        plt.imshow(spectogram, extent=[x.min(), x.max(), y.max(), y.min() ],aspect=aspect)
+    else:
+        y_limit = np.argmax(y > depth_limit)
+        plt.imshow(spectogram[:y_limit], extent=[x.min(), x.max(), y[y_limit], y.min() ],aspect=aspect)
+        # plt.yticks(np.arange(start=0, stop=y_limit, step=step), y[:y_limit:step])
+
+
+    plt.ylabel('Distance[m]')
+    plt.xlabel('velocity[m/s]')
+    plt.colorbar()
+    plt.show()
+
+    return
+
+def get_window(frames, start, length):
+    return frames[start:start+length,:]
+
+def get_window_from_spect(spect, start, length):
+    return spect[:,start:start+length]
 
 
 def get_argmaxed_spectrogram(spectrogram: np.ndarray) -> np.ndarray:

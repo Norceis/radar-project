@@ -196,7 +196,7 @@ def get_spectrogram_metrics(spectrogram: np.ndarray,
 
     return (box_means, box_vars, box_skew, box_kurt)
 
-def get_spectogram_slices(spectrogram: np.ndarray, window_size: int = 216, class_id: int = None) -> np.ndarray:
+def get_spectogram_slices(spectrogram: np.ndarray, window_size: int = 216) -> np.ndarray:
     """
     splits spectogram into vertical slices of size spectrogram.shape[0] x window_size
     returns np.array of shape (num_slices, spectrogram.shape[0], window_size, [1]) (can add class_id)
@@ -207,9 +207,6 @@ def get_spectogram_slices(spectrogram: np.ndarray, window_size: int = 216, class
     for x in range(num_windows):
         slices[x] = spectrogram[:, (x * stride):(x * stride) + window_size]
     
-    if class_id != None:
-        slices = slices[..., np.newaxis]
-        slices[:,:,:,0] = class_id
     return slices
 
 def plot_metrics(means: list,

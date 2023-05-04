@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import scipy.stats
 
 
-def gen_spectogram(frames: np.ndarray, n: int = 512, t: int = 2924, f_slope: float = 5.711) -> (np.ndarray, np.array):
+def gen_spectogram(frames: np.ndarray, n: int = 512, t: int = 2924, f_slope: float = 5.711, depth_limit: int = None) -> (np.ndarray, np.array):
     """
     frames: np.array containing all the frames to transform
     n: number of bins
@@ -23,7 +23,12 @@ def gen_spectogram(frames: np.ndarray, n: int = 512, t: int = 2924, f_slope: flo
     y = y / scale
     y /= 2
     y = np.round(y, 2)
-    return res.T, y
+
+    if depth_limit:
+        y_limit = np.argmax(y > depth_limit)
+        return res.T[:y_limit], y[:y_limit]
+    else:
+        return res.T, y
 
 
 def to_dB(spectogram: np.ndarray) -> np.ndarray:
@@ -123,6 +128,22 @@ def get_spectrogram_metrics(spectrogram: np.ndarray,
     box_kurt = [np.nan_to_num(scipy.stats.kurtosis(box)) for box in box_list]
 
     return (box_means, box_vars, box_skew, box_kurt)
+
+def get_spectogram_slices(spectrogram: np.ndarray, window_size: int = 216, class_id: int = None) -> np.ndarray:
+    """
+    splits spectogram into vertical slices of size spectrogram.shape[0] x window_size
+    returns np.array of shape (num_slices, spectrogram.shape[0], window_size, [1]) (can add class_id)
+    """
+    stride = window_size // 2
+    num_windows = spectrogram.shape[1] // stride - 1
+    slices = np.empty((num_windows, spectrogram.shape[0], window_size))
+    for x in range(num_windows):
+        slices[x] = spectrogram[:, (x * stride):(x * stride) + window_size]
+    
+    if class_id != None:
+        slices = slices[..., np.newaxis]
+        slices[:,:,:,0] = class_id
+    return slices
 
 def plot_metrics(means: list,
                  vars: list,

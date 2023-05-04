@@ -57,6 +57,7 @@ def print_spectogram(spectogram: np.ndarray, y: np.ndarray,
 
     return
 
+
 def gen_velocity_spectogram(frames: np.ndarray, n: int = 512, t: int = 2924, f_slope: float = 5.711) -> (np.ndarray, np.array):
     """
     frames: np.array containing all the frames to transform
@@ -90,6 +91,7 @@ def gen_velocity_spectogram(frames: np.ndarray, n: int = 512, t: int = 2924, f_s
 
     return np.abs(second_fft.T),y, velocities
 
+
 def print_vel_spectogram(spectogram: np.ndarray, y: np.ndarray, x: np.ndarray = None,
                       depth_limit: int = None, aspect: float = 100) -> None:
     """
@@ -118,8 +120,10 @@ def print_vel_spectogram(spectogram: np.ndarray, y: np.ndarray, x: np.ndarray = 
 
     return
 
+
 def get_window(frames, start, length):
     return frames[start:start+length,:]
+
 
 def get_window_from_spect(spect, start, length):
     return spect[:,start:start+length]
@@ -167,6 +171,7 @@ def get_tresholded_spectogram(base_spectrogram: np.ndarray,
 
     return tresholded_spectrogram
 
+
 def get_spectrogram_metrics(spectrogram: np.ndarray,
                 number_of_boxes: int = 1000,
                 window_size: int = 100) -> tuple:
@@ -191,6 +196,7 @@ def get_spectrogram_metrics(spectrogram: np.ndarray,
 
     return (box_means, box_vars, box_skew, box_kurt)
 
+
 def plot_metrics(means: list,
                  vars: list,
                  skew: list,
@@ -212,3 +218,15 @@ def plot_metrics(means: list,
     axs[3].set_title('Kurtosis')
 
     plt.show()
+
+
+# normalize values in numpy array to range 0-1
+def normalize(array: np.array) -> np.array:
+    return (array - np.min(array)) / (np.max(array) - np.min(array))
+
+
+
+
+
+
+

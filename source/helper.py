@@ -184,9 +184,11 @@ def get_spectrogram_metrics(spectrogram: np.ndarray,
     """
     box_list = []
     indices_smoothed = np.argmax(spectrogram, axis=0)
-
+    print(indices_smoothed.shape)
+    print(spectrogram.shape)
     for img_column_idx in range(window_size, spectrogram.shape[1] - window_size,
-                                int(spectrogram.shape[1] / number_of_boxes)):
+                                # int(spectrogram.shape[1] / number_of_boxes)):
+                                window_size//2):
         box_list.append(indices_smoothed[img_column_idx - window_size: img_column_idx + window_size])
 
     box_means = [box.mean() for box in box_list]
@@ -195,6 +197,31 @@ def get_spectrogram_metrics(spectrogram: np.ndarray,
     box_kurt = [np.nan_to_num(scipy.stats.kurtosis(box)) for box in box_list]
 
     return (box_means, box_vars, box_skew, box_kurt)
+
+
+
+def print_spectogram(spectogram: np.ndarray, y: np.ndarray,
+                     step: int = 10, depth_limit: int = None, aspect: float = 100) -> None:
+    """
+    spectogram: spectogram to print
+    y: list of y ticks
+    step: step for printing y axis label
+    depth_limit: maximum depth that we want to se in spectogram
+    aspect: aspect ratio of printed spectogram, to make it more visible
+    """
+    if depth_limit is None:
+        plt.imshow(spectogram, aspect=100)
+        plt.yticks(np.arange(start=0, stop=len(spectogram), step=step), y[::step])
+    else:
+        y_limit = np.argmax(y > depth_limit)
+        plt.imshow(spectogram[:y_limit], aspect=aspect)
+        plt.yticks(np.arange(start=0, stop=y_limit, step=step), y[:y_limit:step])
+    plt.ylabel('Distance[m]')
+    plt.xlabel('Chirp number')
+    plt.colorbar()
+    plt.show()
+
+    return
 
 def get_spectogram_slices(spectrogram: np.ndarray, window_size: int = 216) -> np.ndarray:
     """

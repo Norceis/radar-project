@@ -81,6 +81,47 @@ def yield_aggregate_bin_files(
                 data_tensor = []
                 data_tensor_length = 0
 
+def yield_aggregate_bin_files_new(
+    filename: str,
+    frame_length: int = 3,
+    chunk_length: int = 1000 * 10,
+    file_limit: int = None,
+    radar_dir: Path = (Path("/DCA1000EVM/Pomiary_HighFPS/") / "radar"),
+):
+    radar_files = _get_radar_filenames_new(filename, radar_dir)
+    if isinstance(file_limit, int):
+        radar_files = radar_files[: (file_limit - 1)]
+
+    data_tensor = []
+    data_tensor_length = 0
+    chirp_checkpoint: ChirpCheckpoint = None
+    frame_checkpoint: FrameCheckpoint = None
+    for radar_file in radar_files:
+        logging.warning(radar_file)
+
+        frame_iterator = iter_frame(
+            iter_chirp(radar_file, previous_checkpoint=chirp_checkpoint),
+            frame_length=frame_length,
+            previous_checkpoint=frame_checkpoint,
+        )
+
+        for chunk in yield_chunk(
+            frame_iterator,
+            chunk_length=chunk_length - data_tensor_length,
+        ):
+            if not isinstance(chunk, np.ndarray):
+                chunk, frame_checkpoint = chunk
+                if frame_checkpoint is not None:
+                    _, chirp_checkpoint = frame_checkpoint
+
+            data_tensor.append(chunk)
+            data_tensor_length += len(chunk)
+
+            if data_tensor_length >= chunk_length:
+                yield np.concatenate(data_tensor)
+                data_tensor = []
+                data_tensor_length = 0
+
 
 def _bin_file_index(filename: Path) -> int:
     return int(filename.name.split("_Raw_")[-1].replace(".bin", ""))
@@ -88,6 +129,10 @@ def _bin_file_index(filename: Path) -> int:
 
 def _get_radar_filenames(filename, radar_dir):
     radar_files = sorted(list(radar_dir.glob(filename + "_*.bin")), key=_bin_file_index)
+    return radar_files
+
+def _get_radar_filenames_new(filename, radar_dir):
+    radar_files = sorted(list(radar_dir.glob(filename + ".bin")), key=_bin_file_index)
     return radar_files
 
 

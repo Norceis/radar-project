@@ -1,1 +1,4 @@
 /data/
+*.pickle
+*.h5
+*.pyc

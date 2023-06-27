@@ -206,16 +206,17 @@ def get_spectrogram_metrics(spectrogram: np.ndarray,
     return (box_means, box_vars, box_skew, box_kurt)
 
 
-def get_spectogram_slices(spectrogram: np.ndarray, window_size: int = 216) -> np.ndarray:
+def get_spectogram_slices(spectrogram: np.ndarray, window_size: int = 128) -> np.ndarray:
     """
     splits spectogram into vertical slices of size spectrogram.shape[0] x window_size
     returns np.array of shape (num_slices, spectrogram.shape[0], window_size, [1]) (can add class_id)
     """
     stride = window_size // 2
     num_windows = spectrogram.shape[1] // stride - 1
-    slices = np.empty((num_windows, spectrogram.shape[0], window_size))
+    channels = spectrogram.shape[-1]
+    slices = np.empty((num_windows, spectrogram.shape[0], window_size, channels))
     for x in range(num_windows):
-        slices[x] = spectrogram[:, (x * stride):(x * stride) + window_size]
+        slices[x] = spectrogram[:, (x * stride):(x * stride) + window_size, :]
 
     return slices
 
@@ -401,6 +402,7 @@ def cut_trajectory_from_spectrogram(spectrogram_to_cut_from: np.ndarray,
     """
     modified_normal_spect = spectrogram_to_cut_from[:y_cut, x_cut:-x_cut]
     cut_trajectory = np.zeros_like(modified_normal_spect)
+    slices = []
 
     for idx, column in enumerate(trajectory):
         window_up_limit = int(column[0]) - window_height // 2
@@ -410,9 +412,40 @@ def cut_trajectory_from_spectrogram(spectrogram_to_cut_from: np.ndarray,
 
         cut_trajectory[window_up_limit:window_down_limit, idx] = modified_normal_spect[
                                                                  window_up_limit:window_down_limit, idx]
+        slices.append(modified_normal_spect[window_up_limit:window_down_limit, idx])
+    return cut_trajectory, np.array(slices)
 
-    return cut_trajectory
+def cut_trajectory_slices_from_spectrogram(spectrogram_to_cut_from: np.ndarray,
+                                    trajectory: np.ndarray,
+                                    window_height: int = 4,
+                                    y_cut: int = 90,
+                                    x_cut: int = 1000
+                                    ) -> np.ndarray:
+    """
+    :param spectrogram_to_cut_from: self-explanatory
+    :param trajectory: trajectory in vector format (shape=X,)
+    :param window_height: total height of the window counted from top to bottom
+    :param y_cut: this parameter needs to be shared with generate_kalman_trajectory function,
+                  otherwise there will be shape mismatch
+    :param x_cut: this parameter needs to be shared with generate_kalman_trajectory function,
+                  otherwise there will be shape mismatch
+    :return: isolated trajectory from the general noise based on the trajectory vector values
+    """
+    modified_normal_spect = spectrogram_to_cut_from[:y_cut, x_cut:-x_cut]
+    cut_trajectory = np.zeros_like(modified_normal_spect)
+    slices = []
 
+    for idx, column in enumerate(trajectory):
+        window_up_limit = int(column[0]) - window_height // 2
+        window_down_limit = int(column[0]) + window_height // 2
+        window_up_limit, window_down_limit = _bounds_check(bounds=(window_up_limit, window_down_limit),
+                                                           window_height=window_height)
+
+        cut_trajectory[window_up_limit:window_down_limit, idx] = modified_normal_spect[
+                                                                 window_up_limit:window_down_limit, idx]
+        if idx % window_height//2 == 0 and idx+window_height < len(trajectory):
+            slices.append(modified_normal_spect[window_up_limit:window_down_limit, idx:idx+window_height])
+    return cut_trajectory, np.array(slices)
 
 def _bounds_check(bounds: tuple,
                   window_height: int) -> tuple:
